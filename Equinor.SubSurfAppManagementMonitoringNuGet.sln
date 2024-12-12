@@ -2,6 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Equinor.SubSurfAppManagementMonitoringNuGet", "Equinor.SubSurfAppManagementMonitoringNuGet\Equinor.SubSurfAppManagementMonitoringNuGet.csproj", "{255BC5F9-4D07-4381-9F03-902088B61D49}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solutions Items", "Solutions Items", "{3DF701EF-4FEE-4C75-8753-7FA36B2EB93B}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet.Config = NuGet.Config
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

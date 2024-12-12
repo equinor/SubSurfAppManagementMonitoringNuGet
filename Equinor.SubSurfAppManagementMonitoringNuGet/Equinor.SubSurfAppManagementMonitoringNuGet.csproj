@@ -11,6 +11,7 @@
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <IncludeSymbols>True</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <DocumentationFile>bin\Equinor.SubSurfAppManagementMonitoringNuGet.xml</DocumentationFile>
         <NoWarn>$(NoWarn);CS1591</NoWarn>
     </PropertyGroup>
 
