@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+    - name:
+      run: ls -R
     - name: Checkout
       uses: actions/checkout@v2
     - name: Set VERSION variable from tag
