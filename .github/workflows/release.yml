@@ -1,0 +1,25 @@
+
+on:
+  push:
+    tags:
+    - "v[0-9]+.[0-9]+.[0-9]+"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set VERSION variable from tag
+      run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+    - name: build
+      working-directory: ./Equinor.SubSurfAppManagementMonitoringNuGet/Equinor.SubSurfAppManagementMonitoringNuGet
+      run: dotnet build --configuration Release
+    - name: Pack
+      working-directory: ./Equinor.SubSurfAppManagementMonitoringNuGet/Equinor.SubSurfAppManagementMonitoringNuGet
+      run: dotnet pack --configuration Release /p:Version=${VERSION} --output .
+    - name: Push
+      working-directory: ./Equinor.SubSurfAppManagementMonitoringNuGet/Equinor.SubSurfAppManagementMonitoringNuGet
+      run: dotnet nuget push Equinor.SubSurfAppManagementMonitoringNuGet.${VERSION}.nupkg --source https://nuget.pkg.github.com/equinor/index.json --api-key ${GITHUB_TOKEN}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
