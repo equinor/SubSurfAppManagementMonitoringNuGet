@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-    - name:
+    - name: Debugging
       run: ls -R
     - name: Checkout
       uses: actions/checkout@v2
