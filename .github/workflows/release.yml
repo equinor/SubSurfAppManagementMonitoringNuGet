@@ -15,13 +15,13 @@ jobs:
     - name: Set VERSION variable from tag
       run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
     - name: build
-      working-directory: /Equinor.SubSurfAppManagementMonitoringNuGet
+      working-directory: Equinor.SubSurfAppManagementMonitoringNuGet
       run: dotnet build --configuration Release
     - name: Pack
-      working-directory: /Equinor.SubSurfAppManagementMonitoringNuGet
+      working-directory: Equinor.SubSurfAppManagementMonitoringNuGet
       run: dotnet pack --configuration Release /p:Version=${VERSION} --output .
     - name: Push
-      working-directory: /Equinor.SubSurfAppManagementMonitoringNuGet
+      working-directory: Equinor.SubSurfAppManagementMonitoringNuGet
       run: dotnet nuget push Equinor.SubSurfAppManagementMonitoringNuGet.${VERSION}.nupkg --source https://nuget.pkg.github.com/equinor/index.json --api-key ${GITHUB_TOKEN}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
