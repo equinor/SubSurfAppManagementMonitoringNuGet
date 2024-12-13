@@ -15,7 +15,7 @@ public static class HealthCheckerServiceCollectionExtensions
         services.AddSingleton<IEnvironment, EnvironmentWrapper>();
         services.AddTransient<IHealthCheckerService, DefaultHealthCheckerService>();
         var healthChecksBuilder = services.AddHealthChecks();
-
+        
         return healthChecksBuilder;
 
     }

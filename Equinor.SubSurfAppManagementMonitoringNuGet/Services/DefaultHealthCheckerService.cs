@@ -15,6 +15,7 @@ public interface IHealthCheckerService
     /// Executes all registered health checks and returns a comprehensive health report.
     /// </summary>
     /// <param name="appName">The name our your application</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains a <see cref="HealthReport"/> detailing the status of all health checks.</returns>
     Task<ApplicationHealth> CheckHealthAsync(string appName, CancellationToken cancellationToken = default);
@@ -25,7 +26,6 @@ public class DefaultHealthCheckerService : IHealthCheckerService
 {
     private readonly HealthCheckService _healthCheckService;
     private readonly ILogger<DefaultHealthCheckerService> _logger;
-    private readonly IEnumerable<ICustomHealthCheck> _customHealthChecks;
     private readonly IEnvironment _env;
 
 
@@ -34,13 +34,11 @@ public class DefaultHealthCheckerService : IHealthCheckerService
     /// </summary>
     /// <param name="healthCheckService">The underlying <see cref="HealthCheckService"/> 
     /// used to perform health checks.</param>
-    /// <param name="customHealthChecks">Custom services that should have their health checked <see cref="ICustomHealthCheck"/></param>
     /// <param name="logger"></param>
     /// <param name="env"></param>
-    public DefaultHealthCheckerService(HealthCheckService healthCheckService, IEnumerable<ICustomHealthCheck> customHealthChecks, ILogger<DefaultHealthCheckerService> logger, IEnvironment env)
+    public DefaultHealthCheckerService(HealthCheckService healthCheckService, ILogger<DefaultHealthCheckerService> logger, IEnvironment env)
     {
         _healthCheckService = healthCheckService;
-        _customHealthChecks = customHealthChecks;
         _logger = logger;
         _env = env;
     }
@@ -61,7 +59,7 @@ public class DefaultHealthCheckerService : IHealthCheckerService
         };
 
         var resources = new List<Resource>();
-        var reports = await _healthCheckService.CheckHealthAsync(cancellationToken);
+        var reports = await _healthCheckService.CheckHealthAsync(cancellationToken); 
 
         // Add application resource status
         var resourceApi = new Resource
@@ -71,15 +69,6 @@ public class DefaultHealthCheckerService : IHealthCheckerService
             Message = HealthCheckDescriptions.Descriptions[HealthCheckNames.Api]
         };
         resources.Add(resourceApi);
-        
-        
-        var additionalResources = new List<Resource>();
-        foreach (var healthCheck in _customHealthChecks)
-        {
-            var resource = await healthCheck.CheckHealth(cancellationToken);
-            additionalResources.Add(resource);
-        }
-        applicationHealth.Resources.AddRange(additionalResources);
         
         foreach (var report in reports.Entries)
         {
