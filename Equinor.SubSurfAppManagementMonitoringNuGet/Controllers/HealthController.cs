@@ -28,6 +28,10 @@ public class HealthController : ControllerBase
         _applicationConfig = applicationConfig.Value;
     }
 
+    /// <summary>
+    /// Checks the health of the API
+    /// </summary>
+    /// <returns></returns>
     public async Task<ApplicationHealth> Get()
     {
         var applicationHealth = await _healthCheckerService.CheckHealthAsync(_applicationConfig.AppName);

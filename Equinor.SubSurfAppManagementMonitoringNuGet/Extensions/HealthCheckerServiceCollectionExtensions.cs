@@ -12,11 +12,7 @@ public static class HealthCheckerServiceCollectionExtensions
     /// <param name="services">The service collection.</param>
     public static IHealthChecksBuilder AddDefaultHealthChecker(this IServiceCollection services)
     {
-        services.AddSingleton<IEnvironment, EnvironmentWrapper>();
-        services.AddTransient<IHealthCheckerService, DefaultHealthCheckerService>();
         var healthChecksBuilder = services.AddHealthChecks();
-        
         return healthChecksBuilder;
-
     }
 }
