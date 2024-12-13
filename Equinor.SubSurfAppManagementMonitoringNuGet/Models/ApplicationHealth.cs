@@ -13,18 +13,28 @@ public class ApplicationHealth
     /// Gets or sets the date when the health data was requested.
     /// </summary>
     public DateTime RequestDate { get; set; }
+
     /// <summary>
     /// Gets or sets the list of resources associated with the application's health data.
     /// If no resources are available, this property may be null.
     /// </summary>
-    public List<Resources>? Resources { get; set; }
+    public List<Resource> Resources { get; private set; } = new();
 
     /// <summary>
     /// Sets the resources for all heathdata
     /// </summary>
     /// <param name="resources"></param>
-    public void SetResouces(List<Resources> resources)
+    internal void SetResouces(List<Resource> resources)
     {
         Resources = resources;
+    }
+
+    /// <summary>
+    /// Adds custom health resources 
+    /// </summary>
+    /// <param name="resource"></param>
+    public void AddCustomResource(Resource resource)
+    {
+        Resources.Add(resource);
     }
 }

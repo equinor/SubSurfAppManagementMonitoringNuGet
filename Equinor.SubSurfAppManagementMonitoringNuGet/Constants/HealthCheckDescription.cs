@@ -9,7 +9,7 @@ namespace Equinor.SubSurfAppManagementMonitoringNuget.Constants;
         /// <summary>
         /// Contains descriptions of Each Named HealthCheck in <see cref="HealthCheckNames"/>
         /// </summary>
-        public static Dictionary<string, string> Descriptions = new()
+        private static readonly Dictionary<string, string> _descriptions = new()
         {
             { HealthCheckNames.SMDA, "SMDA (Subsurface Master Data) is a system that consolidates data across Equinor’s internal and external sources and provides the best available subsurface data basis for stakeholder applications and users in Petec, Exploration, Drilling & Well and more."},
             { HealthCheckNames.SSDL, "SSDL (Subsurface Data Lake) allows accessibility to high quality and analytics ready datasets for subsurface disciplines in Exploration, Petec and Drilling & well"},
@@ -24,4 +24,18 @@ namespace Equinor.SubSurfAppManagementMonitoringNuget.Constants;
             { HealthCheckNames.Servicebus, "Azure Service bus is a message broker with queues and publish-subscribe topics. It is used for Realtime notifications"},
             { HealthCheckNames.ApplicationInsights, "Application Insights is a feature of Azure Monitor that monitors and analyzes the performance and usage of web applications"},
         };
+        
+        public static IReadOnlyDictionary<string, string> Descriptions => _descriptions;
+        
+        public static void AddOrUpdateDescription(string key, string description)
+        {
+            if (_descriptions.ContainsKey(key))
+            {
+                _descriptions[key] = description;
+            }
+            else
+            {
+                _descriptions.Add(key, description);
+            }
+        }
     }

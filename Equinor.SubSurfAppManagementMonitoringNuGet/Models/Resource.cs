@@ -3,7 +3,7 @@ namespace Equinor.SubSurfAppManagementMonitoringNuget.Models;
 /// <summary>
 /// Represents a resource within the application, including its name, status, and additional details.
 /// </summary>
-public class Resources
+public class Resource
 {
     /// <summary>
     /// Gets or sets the name of the resource.
