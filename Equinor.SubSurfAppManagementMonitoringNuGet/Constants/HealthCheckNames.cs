@@ -1,4 +1,4 @@
-namespace Equinor.SubSurfAppManagementMonitoringNuget.Constants;
+namespace Equinor.SubSurfAppManagementMonitoringNuGet.Constants;
 
 /// <summary>
 /// Names of HealthChecks; Used as keys in <see cref="HealthCheckDescriptions"/> dictionary

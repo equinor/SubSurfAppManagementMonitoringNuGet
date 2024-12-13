@@ -1,4 +1,4 @@
-namespace Equinor.SubSurfAppManagementMonitoringNuget.Constants;
+namespace Equinor.SubSurfAppManagementMonitoringNuGet.Constants;
 
 
     /// <summary>

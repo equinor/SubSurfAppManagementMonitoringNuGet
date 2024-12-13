@@ -1,7 +1,7 @@
 using Asp.Versioning;
 using Equinor.SubSurfAppManagementMonitoringNuGet.Config;
-using Equinor.SubSurfAppManagementMonitoringNuget.Models;
-using Equinor.SubSurfAppManagementMonitoringNuget.Services;
+using Equinor.SubSurfAppManagementMonitoringNuGet.Models;
+using Equinor.SubSurfAppManagementMonitoringNuGet.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -32,7 +32,7 @@ public class HealthController : ControllerBase
     /// Checks the health of the API
     /// </summary>
     /// <returns></returns>
-    public async Task<ApplicationHealth> Get()
+    public async Task<ApplicationHealth> Get() 
     {
         var applicationHealth = await _healthCheckerService.CheckHealthAsync(_applicationConfig.AppName);
 

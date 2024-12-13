@@ -1,4 +1,4 @@
-namespace Equinor.SubSurfAppManagementMonitoringNuget.Models;
+namespace Equinor.SubSurfAppManagementMonitoringNuGet.Models;
 
 /// <summary>
 /// Represents a resource within the application, including its name, status, and additional details.

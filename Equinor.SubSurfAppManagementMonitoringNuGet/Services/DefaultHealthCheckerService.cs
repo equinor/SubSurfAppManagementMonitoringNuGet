@@ -1,10 +1,10 @@
-using Equinor.SubSurfAppManagementMonitoringNuget.Constants;
-using Equinor.SubSurfAppManagementMonitoringNuget.Helpers;
-using Equinor.SubSurfAppManagementMonitoringNuget.Models;
+using Equinor.SubSurfAppManagementMonitoringNuGet.Constants;
+using Equinor.SubSurfAppManagementMonitoringNuGet.Helpers;
+using Equinor.SubSurfAppManagementMonitoringNuGet.Models;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 
-namespace Equinor.SubSurfAppManagementMonitoringNuget.Services;
+namespace Equinor.SubSurfAppManagementMonitoringNuGet.Services;
 
 /// <summary>
 /// Provides an abstraction for executing health checks within an application.

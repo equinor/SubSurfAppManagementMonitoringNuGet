@@ -1,4 +1,4 @@
-﻿namespace Equinor.SubSurfAppManagementMonitoringNuget.Models;
+﻿namespace Equinor.SubSurfAppManagementMonitoringNuGet.Models;
 
 /// <summary>
 /// Represents the application for which the health data is retrieved

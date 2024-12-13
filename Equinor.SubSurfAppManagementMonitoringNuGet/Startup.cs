@@ -1,6 +1,6 @@
 using Equinor.SubSurfAppManagementMonitoringNuGet.Controllers;
-using Equinor.SubSurfAppManagementMonitoringNuget.Helpers;
-using Equinor.SubSurfAppManagementMonitoringNuget.Services;
+using Equinor.SubSurfAppManagementMonitoringNuGet.Helpers;
+using Equinor.SubSurfAppManagementMonitoringNuGet.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

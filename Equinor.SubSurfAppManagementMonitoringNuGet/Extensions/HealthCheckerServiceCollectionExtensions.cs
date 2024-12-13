@@ -1,8 +1,8 @@
-using Equinor.SubSurfAppManagementMonitoringNuget.Helpers;
-using Equinor.SubSurfAppManagementMonitoringNuget.Services;
+using Equinor.SubSurfAppManagementMonitoringNuGet.Helpers;
+using Equinor.SubSurfAppManagementMonitoringNuGet.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Equinor.SubSurfAppManagementMonitoringNuget.Extensions;
+namespace Equinor.SubSurfAppManagementMonitoringNuGet.Extensions;
 
 public static class HealthCheckerServiceCollectionExtensions
 {

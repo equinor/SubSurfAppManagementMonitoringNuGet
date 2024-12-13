@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Hosting;
 
-namespace Equinor.SubSurfAppManagementMonitoringNuget.Helpers;
+namespace Equinor.SubSurfAppManagementMonitoringNuGet.Helpers;
 
 public interface IEnvironment
 {
