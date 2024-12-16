@@ -1,10 +1,8 @@
 using Asp.Versioning;
-using Equinor.SubSurfAppManagementMonitoringNuGet.Config;
 using Equinor.SubSurfAppManagementMonitoringNuGet.Models;
 using Equinor.SubSurfAppManagementMonitoringNuGet.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace Equinor.SubSurfAppManagementMonitoringNuGet.Controllers;
 
@@ -20,12 +18,13 @@ public class HealthController : ControllerBase
 {
     private readonly IHealthCheckerService _healthCheckerService;
     
-    private readonly ApplicationConfig _applicationConfig;
+    private readonly HealthControllerOptions _options;
 
-    public HealthController(IHealthCheckerService healthCheckerService, IOptions<ApplicationConfig> applicationConfig)
+    
+    public HealthController(IHealthCheckerService healthCheckerService, HealthControllerOptions options)
     {
         _healthCheckerService = healthCheckerService;
-        _applicationConfig = applicationConfig.Value;
+        _options = options;
     }
 
     /// <summary>
@@ -35,7 +34,7 @@ public class HealthController : ControllerBase
     [HttpGet]
     public async Task<ApplicationHealth> Get() 
     {
-        var applicationHealth = await _healthCheckerService.CheckHealthAsync(_applicationConfig.AppName);
+        var applicationHealth = await _healthCheckerService.CheckHealthAsync(_options.AppName);
 
         return applicationHealth;
     }
