@@ -27,8 +27,7 @@ public class DefaultHealthCheckerService : IHealthCheckerService
     private readonly HealthCheckService _healthCheckService;
     private readonly ILogger<DefaultHealthCheckerService> _logger;
     private readonly IEnvironment _env;
-
-
+    
     /// <summary>
     /// Initializes a new instance of the <see cref="DefaultHealthCheckerService"/> class.
     /// </summary>
