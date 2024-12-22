@@ -21,7 +21,7 @@ public class SmdaClient : ISmdaClient
     {
         var completionOption = option ?? HttpCompletionOption.ResponseContentRead;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-        var response = await _httpClient.GetAsync(path, completionOption, cancellationToken);
+        var response = await _httpClient.GetAsync(path, completionOption, cancellationToken).ConfigureAwait(false);
         return response;
     }
 }
