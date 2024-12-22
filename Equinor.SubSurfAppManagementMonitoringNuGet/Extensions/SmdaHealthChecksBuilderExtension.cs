@@ -91,7 +91,6 @@ public static class SmdaHealthChecksBuilderExtension
             Console.WriteLine($"Smda baseaddress: {client.BaseAddress}");
         });
         
-        builder.Services.AddScoped<ISmdaClient, SmdaClient>();
         builder.Services.AddScoped<IAccessTokenService, T>();
         
         return builder.Add(new HealthCheckRegistration(
