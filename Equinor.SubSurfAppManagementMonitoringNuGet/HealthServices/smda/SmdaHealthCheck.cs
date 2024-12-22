@@ -12,15 +12,15 @@ public class SmdaHealthCheck : IHealthCheck
     
     private readonly IAccessTokenService _tokenService;
     
-    private readonly string? _requestUri;
+    private readonly string? _requestPath;
 
     private readonly string? _resourceId;
 
-    public SmdaHealthCheck(ISmdaClient client, IAccessTokenService tokenService, string requestUri, string resourceId)
+    public SmdaHealthCheck(ISmdaClient client, IAccessTokenService tokenService, string requestPath, string resourceId)
     {
         _client = client;
         _tokenService = tokenService;
-        _requestUri = Guard.Against.NullOrWhiteSpace(requestUri, nameof(requestUri), "RequestUri is required");
+        _requestPath = Guard.Against.NullOrWhiteSpace(requestPath, nameof(requestPath), "RequestPath is required");
         _resourceId = Guard.Against.NullOrWhiteSpace(resourceId, nameof(resourceId), "ResourceId is required");
     }
 
@@ -29,10 +29,10 @@ public class SmdaHealthCheck : IHealthCheck
     {
         try
         {
-            if (_requestUri is not null && _resourceId is not null)
+            if (_requestPath is not null && _resourceId is not null)
             {
                 var token = await _tokenService.GetAccessTokenOnBehalfOfAsync(_resourceId).ConfigureAwait(false);
-                var res = await _client.GetSmdaDataAsync(_requestUri, token, HttpCompletionOption.ResponseHeadersRead,
+                var res = await _client.GetSmdaDataAsync(_requestPath, token, HttpCompletionOption.ResponseHeadersRead,
                     cancellationToken);
 
                 if (res.IsSuccessStatusCode)
