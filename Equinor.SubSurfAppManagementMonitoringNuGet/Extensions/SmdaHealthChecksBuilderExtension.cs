@@ -84,7 +84,7 @@ public static class SmdaHealthChecksBuilderExtension
 
             client.BaseAddress = new Uri(baseAddress);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            client.DefaultRequestHeaders.Add("ApiKey", apiKey);
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apiKey);
             client.DefaultRequestHeaders.Add("Cache-Control", cacheControl);
             client.Timeout = timeout ?? client.Timeout;
             

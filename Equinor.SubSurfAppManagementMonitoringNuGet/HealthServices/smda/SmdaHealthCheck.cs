@@ -39,7 +39,7 @@ public class SmdaHealthCheck : IHealthCheck
                 
                 var token = await _tokenService.GetAccessTokenOnBehalfOfAsync(_resourceId).ConfigureAwait(false);
                 var res = await _client.GetSmdaDataAsync(_requestPath, token, HttpCompletionOption.ResponseHeadersRead,
-                    cancellationToken);
+                    cancellationToken).ConfigureAwait(false);
                 
                 if (res.IsSuccessStatusCode)
                 {
