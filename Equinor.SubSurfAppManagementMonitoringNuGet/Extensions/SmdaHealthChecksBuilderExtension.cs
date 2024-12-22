@@ -3,6 +3,7 @@ using Equinor.SubSurfAppManagementMonitoringNuGet.HealthServices.smda;
 using Equinor.SubSurfAppManagementMonitoringNuGet.HttpClients;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 
 namespace Equinor.SubSurfAppManagementMonitoringNuGet.Extensions;
 
@@ -86,6 +87,8 @@ public static class SmdaHealthChecksBuilderExtension
             client.DefaultRequestHeaders.Add("ApiKey", apiKey);
             client.DefaultRequestHeaders.Add("Cache-Control", cacheControl);
             client.Timeout = timeout ?? client.Timeout;
+            
+            Console.WriteLine($"Smda baseaddress: {client.BaseAddress}");
         });
         
         builder.Services.AddScoped<ISmdaClient, SmdaClient>();
@@ -97,9 +100,10 @@ public static class SmdaHealthChecksBuilderExtension
             {
                 var tokenService = sp.GetRequiredService<IAccessTokenService>();
                 var client = sp.GetRequiredService<ISmdaClient>();
+                var logger = sp.GetRequiredService<ILogger<SmdaHealthCheck>>();
                 var requestPath = requestPathFactory(sp);
                 var resourceId = resourceIdFactory(sp);
-                return new SmdaHealthCheck(client, tokenService, requestPath, resourceId);
+                return new SmdaHealthCheck(client, tokenService, requestPath, resourceId, logger);
             },
             failureStatus,
             tags,
