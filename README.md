@@ -29,6 +29,59 @@ Replace PERSONAL_ACCESS_TOKEN with the value of your personal access token, gene
 Replace GITHUB_USERNAME with your GitHub username.
 
 
+## How to use
+
+### Assumptions
+- Assumes you are using Application Insight and that it is configured for recieving telemetry with for example:
+```
+services.AddApplicationInsightsTelemetry(Configuration);
+```
+
+### Configure services:
+- Use the Configure method:
+```
+Equinor.SubSurfAppManagementMonitoringNuGet.Configure(services, Configuration);
+```
+This will ensure that necessary Telemetry is sent to Application Insights
+
+### Steps for HealthChecks
+This AddDefaultHealthController extension method is designed to simplify the integration of a default health checker service into your application. It registers the necessary components and provides health-checking capabilities with a controller endpoint
+
+- In your Startup.cs or Program.cs (depending on your project type), add one of the health checkers (controllers) to the IServiceCollection:
+Example:
+```
+services.AddDefaultHealthController(Configuration, Configuration["ApplicationConfig:AppName"]!)
+  .AddSqlServer(....
+```
+
+- If you are using some of the default HealthCheckServices such as the SmdaHealthCheck you need to create an implementation of the IAccessTokenService
+Example:
+```
+    public class TempTokenService : IAccessTokenService
+    {
+        private readonly IMsalTokenService _msalTokenService;
+        public TempTokenService(IMsalTokenService msalTokenService)
+        {
+            _msalTokenService = msalTokenService;
+        }
+        public async Task<string> GetAccessTokenAsync(string resourceId)
+        {
+            return await _msalTokenService.GetAccessTokenAsync(resourceId);
+        }
+
+        public async Task<string> GetAccessTokenOnBehalfOfAsync(string resourceId)
+        {
+            return await _msalTokenService.GetAccessTokenOnBehalfOfAsync(resourceId);
+        }
+    }
+```
+- Then you can add the healthCeck like this:
+```
+.AddSmdaHealthChecks<TempTokenService>(
+                    requestUrl: Configuration["SmdaApi:ApiUrl"]!,
+...
+```
+
 ## Uploading new version of the nuget package
 
 In the github repository, Click Create new release. Create a tag in the fromat `v#.#.#`, where `#` are one or more numbers. Upon publishing the release Github actions will pack and upload a new package with version `v#.#.#`.
