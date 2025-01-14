@@ -1,17 +1,14 @@
+using Equinor.SubSurfAppManagementMonitoringNuGet.HealthServices.smda;
+
 namespace Equinor.SubSurfAppManagementMonitoringNuGet.Authentication;
 
 /// <summary>
-/// Defines methods for achieving accesstokens 
+/// Defines the interface which must be implemented for achieving accesstokens for default HealthCheckServices such as smda: <see cref="SmdaHealthCheck"/>
 /// </summary>
 public interface IAccessTokenService
 {
     /// <summary>
-    /// Get access token on behalf of the app
-    /// </summary>
-    Task<string> GetAccessTokenAsync(string resourceId);
-
-    /// <summary>
-    /// Get access token on behalf of the user
+    /// Get access token on behalf of the caller
     /// </summary>
     Task<string> GetAccessTokenOnBehalfOfAsync(string resourceId);
 }
