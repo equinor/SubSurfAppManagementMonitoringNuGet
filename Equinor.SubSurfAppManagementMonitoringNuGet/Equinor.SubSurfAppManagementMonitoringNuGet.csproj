@@ -19,6 +19,7 @@
       <PackageReference Include="Ardalis.GuardClauses" Version="5.0.0" />
       <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
       <PackageReference Include="AspNetCore.HealthChecks" Version="1.0.0" /> 
+      <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" /> 
       <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.0" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
       <PackageReference Include="Microsoft.Identity.Client" Version="4.66.2" />
