@@ -1,5 +1,12 @@
-## SubsurfAppManagementMonitoringNuget
+<img alt="intro-logo" src="https://raw.githubusercontent.com/equinor/amplify-component-lib/main/static/amplify.png" width="300px" />
 
+[![SCM Compliance](https://scm-compliance-api.radix.equinor.com/repos/equinor/amplify-component-lib/badge)](https://scm-compliance-api.radix.equinor.com/repos/equinor/amplify-component-lib/badge)
+
+SubsurfAppManagementMonitoringNuget contains software designed to be impemented by APIs that are to be integrated with our monitoring solution.
+
+This package is first and foremost for our own Amplify applications (with some exceptions). If you have an issue or find any bugs, create an issue in Github as we don't accept PRs from contributors outside of the Amplify team.
+
+# SubsurfAppManagementMonitoringNuget
 ## About
 
 This Repository is a nuget package responsible standardizing HVS (Health Vulnerability and security) for subsurface applications. The package is hosted in the [github registry](https://github.com/orgs/equinor/packages?repo_name=SubSurfAppManagementMonitoringNuGet).
