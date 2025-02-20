@@ -87,8 +87,6 @@ public static class SmdaHealthChecksBuilderExtension
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apiKey);
             client.DefaultRequestHeaders.Add("Cache-Control", cacheControl);
             client.Timeout = timeout ?? client.Timeout;
-            
-            Console.WriteLine($"Smda baseaddress: {client.BaseAddress}");
         });
         
         builder.Services.AddScoped<IAccessTokenService, T>();
