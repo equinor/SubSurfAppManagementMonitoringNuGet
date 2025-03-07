@@ -19,6 +19,6 @@ jobs:
       run: dotnet pack --configuration Release /p:Version=${VERSION} --output .
     - name: Push
       working-directory: Equinor.SubSurfAppManagementMonitoringNuGet
-      run: dotnet nuget push Equinor.SubSurfAppManagementMonitoringNuGet.${VERSION}.nupkg --source https://nuget.pkg.github.com/equinor/index.json --api-key ${GITHUB_TOKEN}
+      run: dotnet nuget push Equinor.SubSurfAppManagementMonitoringNuGet.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
