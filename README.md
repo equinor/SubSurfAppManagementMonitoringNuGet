@@ -88,6 +88,18 @@ Example:
 ...
 ```
 
+The added healthcontroller exprects Api version to be set. It is therefore necessary to register the service api version.
+For example:
+
+```
+builder.Services.AddApiVersioning(options =>
+        {
+            options.ReportApiVersions = true;
+            options.AssumeDefaultVersionWhenUnspecified = true;
+            options.DefaultApiVersion = new ApiVersion(1, 0);
+        });
+```
+
 ## Uploading new version of the nuget package
 
 In the github repository, Click Create new release. Create a tag in the fromat `v#.#.#`, where `#` are one or more numbers. Upon publishing the release Github actions will pack and upload a new package with version `v#.#.#`.
