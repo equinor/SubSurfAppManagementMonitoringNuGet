@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <version>1.0.0</version>
+        <version>1.0.4</version>
         <TargetFramework>net8.0</TargetFramework>
+        <PackageId>Equinor.SubSurfAppManagementMonitoringNuGet</PackageId>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RepositoryUrl>https://github.com/equinor/SubSurfAppManagementMonitoringNuGet</RepositoryUrl>
@@ -10,6 +11,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <IncludeSymbols>True</IncludeSymbols>
+        <Company>Equinor</Company>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <DocumentationFile>bin\Equinor.SubSurfAppManagementMonitoringNuGet.xml</DocumentationFile>
         <NoWarn>$(NoWarn);CS1591</NoWarn>
