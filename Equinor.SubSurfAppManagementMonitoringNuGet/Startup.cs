@@ -19,6 +19,7 @@ public static class Startup
     
     private static void ConfigureDependencyInjection(IServiceCollection services)
     {
+        services.AddHttpContextAccessor();
         services.AddSingleton<ITelemetryInitializer, AuditTelemetryInitializer>();
     }
 
