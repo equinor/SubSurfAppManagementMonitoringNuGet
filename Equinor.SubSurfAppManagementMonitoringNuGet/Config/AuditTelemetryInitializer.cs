@@ -32,12 +32,23 @@ public class AuditTelemetryInitializer : ITelemetryInitializer
                 telemetry.Context.GlobalProperties["user-agent"] = httpContext.Request.Headers["User-Agent"].ToString();
             }
 
-            if (httpContext?.User?.Identity?.IsAuthenticated == true &&
-                httpContext.User.HasClaim(c => c.Type == ClaimTypes.Name))
+            if (httpContext?.User?.Identity?.IsAuthenticated == true)
             {
-                telemetry.Context.User.AuthenticatedUserId =
-                    httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-                ;
+                if (httpContext.User.HasClaim(c => c.Type == ClaimTypes.Name))
+                {
+                    telemetry.Context.User.AuthenticatedUserId =
+                        httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+                }
+                else if (httpContext.User.HasClaim(c => c.Type.Equals("upn", StringComparison.OrdinalIgnoreCase)))
+                {
+                    telemetry.Context.User.AuthenticatedUserId =
+                        httpContext.User.Claims
+                            .FirstOrDefault(c => c.Type.Equals("upn", StringComparison.OrdinalIgnoreCase))?.Value;
+                }
+                else
+                {
+                    telemetry.Context.User.AuthenticatedUserId = "<unknown>";
+                }
             }
         }
         catch
