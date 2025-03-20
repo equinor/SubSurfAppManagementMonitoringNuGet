@@ -15,7 +15,7 @@ This Repository is a nuget package responsible standardizing HVS (Health Vulnera
 ## Requirements for User activity:
 1. Your API is using Application Insights, ie. ```builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);``` or somthing that achieves the same.
 2. User email is available through either **ClaimTypes.Names** (using System.Security.Claims), alternatively in the "UPN" claim.
-3. Grant the role **Anatylics Reader** in the application insights resource (for each Environment you have) to the serviceprincipals: SubsurfAppManagement-Server-Dev, SubsurfAppManagement-Server-Staging and SubsurfAppManagement-Server-Prod.
+3. Grant the role **Log Anatylics Reader** in the application insights resource (for each Environment you have) to the serviceprincipals: SubsurfAppManagement-Server-Dev, SubsurfAppManagement-Server-Staging and SubsurfAppManagement-Server-Prod.
 4. Send your Application insihgts URI to us.
 
 ## Requirements for Health data:
