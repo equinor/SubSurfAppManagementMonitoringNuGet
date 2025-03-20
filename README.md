@@ -9,15 +9,14 @@ This package is first and foremost for our own Amplify applications (with some e
 # SubsurfAppManagementMonitoringNuget
 ## About
 
-This Repository is a nuget package responsible standardizing HVS (Health Vulnerability and security) for subsurface applications. The package is hosted in the [github registry](https://github.com/orgs/equinor/packages?repo_name=SubSurfAppManagementMonitoringNuGet).
-
-[github nuget registry documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry)
+This Repository is a nuget package responsible standardizing HVS (Health Vulnerability and security) for subsurface applications.
 
 
 ## Requirements for User activity:
 1. Your API is using Application Insights, ie. ```builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);``` or somthing that achieves the same.
-2. User email is available through either ClaimTypes.Names (using System.Security.Claims), alternatively in the "UPN" claim.
-3. Grant the role *Anatylics Reader* in the application insights resource (for each Environment you have) to the serviceprincipals: SubsurfAppManagement-Server-Dev, SubsurfAppManagement-Server-Staging and SubsurfAppManagement-Server-Prod.
+2. User email is available through either **ClaimTypes.Names** (using System.Security.Claims), alternatively in the "UPN" claim.
+3. Grant the role **Anatylics Reader** in the application insights resource (for each Environment you have) to the serviceprincipals: SubsurfAppManagement-Server-Dev, SubsurfAppManagement-Server-Staging and SubsurfAppManagement-Server-Prod.
+4. Send your Application insihgts URI to us.
 
 ## Requirements for Health data:
 1. Api versioning needs to be registered with version 1 for example: ```builder.Services.AddApiVersioning(options =>
@@ -99,38 +98,6 @@ builder.Services.AddApiVersioning(options =>
 
 In the github repository, Click Create new release. Create a tag in the fromat `v#.#.#`, where `#` are one or more numbers. Upon publishing the release Github actions will pack and upload a new package with version `v#.#.#`.
 
-### Dockerfile
-
-In the dockerfile Make sure to add the nuget source before runnning `dotnet restore`.
-`GIT_USER` is your github username, and `GIT_TOKEN_NUGET_READ` is your github classic token with at least nuget read premissions.
-like shown below you also need to decode from base64 because thats how [radix passes build secrets](https://www.radix.equinor.com/guides/build-secrets/#build-secrets).
-
-```
-# ADD nuget source
-ARG GIT_TOKEN_NUGET_READ
-ARG GIT_USER
-RUN TOKEN=$(echo $GIT_TOKEN_NUGET_READ|base64 -d) && \
-USER=$(echo $GIT_USER|base64 -d) && \
-dotnet nuget add source https://nuget.pkg.github.com/equinor/index.json -n equinor -u $USER -p $TOKEN --store-password-in-clear-text
-```
-
-
-### Radix Configuration
-You will need to declere `GIT_USER` and `GIT_TOKEN_NUGET_READ` as build secrets in the radixconfig.yaml
-
-```
-apiVersion: radix.equinor.com/v1
-kind: RadixApplication
-metadata:
-  name: ...
-spec:
-  build:
-    secrets:
-      - GIT_TOKEN_NUGET_READ
-      - GIT_USER
-  environments:
-  ...
-```
 
 #### Preview Release
 
