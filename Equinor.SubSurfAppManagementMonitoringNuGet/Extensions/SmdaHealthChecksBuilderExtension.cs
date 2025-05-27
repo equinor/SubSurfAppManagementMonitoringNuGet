@@ -45,14 +45,14 @@ public static class SmdaHealthChecksBuilderExtension
 
 
     /// <summary>
-    /// Add a health check for Redis services.
+    /// Add a health check for smda.
     /// </summary>
     /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
     /// <param name="requestUrlFactory"></param>
     /// <param name="apiKeyFactory"></param>
     /// <param name="resourceIdFactory"></param>
     /// <param name="cacheControlHeaderFactory">A factory to build cache headers</param>
-    /// <param name="name">The health check name. Optional. If <c>null</c> the type name 'redis' will be used for the name.</param>
+    /// <param name="name">The health check name. Optional. If <c>null</c> the type name 'SMDA' will be used for the name.</param>
     /// <param name="failureStatus">
     /// The <see cref="HealthStatus"/> that should be reported when the health check fails. Optional. If <c>null</c> then
     /// the default status of <see cref="HealthStatus.Unhealthy"/> will be reported.
@@ -98,7 +98,7 @@ public static class SmdaHealthChecksBuilderExtension
                 var resourceId = resourceIdFactory(sp);
                 return new SmdaHealthCheck(client, tokenService, requestPath, resourceId, logger);
             },
-            failureStatus,
+            failureStatus ?? HealthStatus.Unhealthy,
             tags,
             timeout
         ));
