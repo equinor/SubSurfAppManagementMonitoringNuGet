@@ -6,6 +6,10 @@ using System.Security.Claims;
 
 namespace Equinor.SubSurfAppManagementMonitoringNuGet.Config;
 
+/// <summary>
+/// Middleware to for ITelemetry which sets the IP,
+/// user agent and email of the authenticated user.
+/// </summary>
 public class AuditTelemetryInitializer : ITelemetryInitializer
 {
     private readonly IHttpContextAccessor _contextAccessor;

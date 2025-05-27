@@ -24,15 +24,13 @@ public static class SmdaHealthChecksBuilderExtension
     /// </param>
     /// <param name="tags">A list of tags that can be used to filter sets of health checks. Optional.</param>
     /// <param name="timeout">An optional <see cref="TimeSpan"/> representing the timeout of the check.</param>
-    /// <param name="requestUrl">The url to be used, should include the api version </param>
-    /// <param name="requestHealthPath">The path to get the health data</param>
+    /// <param name="requestUrl">The url to be used, should be similar to this: https://api.gateway.equinor.com</param>
     /// <param name="apiKey">Api to be set</param>
     /// <param name="resourceId">Id for the resource to get an accesstoken for</param>
     /// <returns>The specified <paramref name="builder"/>.</returns>
     public static IHealthChecksBuilder AddSmdaHealthChecks<T>(
         this IHealthChecksBuilder builder,
         string requestUrl,
-        string requestHealthPath,
         string apiKey,
         string resourceId,
         string cacheControlHeaderValue,
@@ -42,7 +40,7 @@ public static class SmdaHealthChecksBuilderExtension
         IEnumerable<string>? tags = default,
         TimeSpan? timeout = default) where T : class, IAccessTokenService
     {
-        return builder.AddSmdaHealthChecks<T>(_ => requestUrl, _ => requestHealthPath,_ => apiKey, _ => resourceId,_ => cacheControlHeaderValue, name, failureStatus, tags, timeout );
+        return builder.AddSmdaHealthChecks<T>(_ => requestUrl,_ => apiKey, _ => resourceId,_ => cacheControlHeaderValue, name, failureStatus, tags, timeout );
     }
 
 
@@ -51,7 +49,6 @@ public static class SmdaHealthChecksBuilderExtension
     /// </summary>
     /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
     /// <param name="requestUrlFactory"></param>
-    /// <param name="requestPathFactory">A Factory for setting the request path</param>
     /// <param name="apiKeyFactory"></param>
     /// <param name="resourceIdFactory"></param>
     /// <param name="cacheControlHeaderFactory">A factory to build cache headers</param>
@@ -66,7 +63,6 @@ public static class SmdaHealthChecksBuilderExtension
     public static IHealthChecksBuilder AddSmdaHealthChecks<T>(
         this IHealthChecksBuilder builder,
         Func<IServiceProvider, string> requestUrlFactory,
-        Func<IServiceProvider, string> requestPathFactory,
         Func<IServiceProvider, string> apiKeyFactory,
         Func<IServiceProvider, string> resourceIdFactory,
         Func<IServiceProvider, string> cacheControlHeaderFactory,
@@ -98,7 +94,7 @@ public static class SmdaHealthChecksBuilderExtension
                 var tokenService = sp.GetRequiredService<IAccessTokenService>();
                 var client = sp.GetRequiredService<ISmdaClient>();
                 var logger = sp.GetRequiredService<ILogger<SmdaHealthCheck>>();
-                var requestPath = requestPathFactory(sp);
+                const string requestPath = "/smda/v2.0/actuator/health";
                 var resourceId = resourceIdFactory(sp);
                 return new SmdaHealthCheck(client, tokenService, requestPath, resourceId, logger);
             },

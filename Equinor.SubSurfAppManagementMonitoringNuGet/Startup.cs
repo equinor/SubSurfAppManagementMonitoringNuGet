@@ -1,6 +1,5 @@
 using Equinor.SubSurfAppManagementMonitoringNuGet.Config;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Equinor.SubSurfAppManagementMonitoringNuGet;
@@ -11,8 +10,7 @@ public static class Startup
     /// Configures the default services and dependencies for the nuget package
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="Configuration"></param>
-    public static void Configure(IServiceCollection services, IConfiguration Configuration)
+    public static void Configure(IServiceCollection services)
     {
         ConfigureDependencyInjection(services);
     }
