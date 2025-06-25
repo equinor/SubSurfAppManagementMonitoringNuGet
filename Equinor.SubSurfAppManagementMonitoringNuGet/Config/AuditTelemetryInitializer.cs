@@ -3,6 +3,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using Microsoft.ApplicationInsights.DataContracts;
 
 namespace Equinor.SubSurfAppManagementMonitoringNuGet.Config;
 
@@ -53,6 +54,17 @@ public class AuditTelemetryInitializer : ITelemetryInitializer
                 {
                     telemetry.Context.User.AuthenticatedUserId = "<unknown>";
                 }
+                
+                var roles = new List<string>();
+
+                foreach (var identity in httpContext.User.Identities)
+                {
+                    roles.AddRange(identity.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value));
+                }
+
+                if (telemetry is not ISupportProperties telemetryProperties) return;
+                    
+                telemetryProperties.Properties["UserApplicationRoles"] = string.Join(", ", roles);
             }
         }
         catch
