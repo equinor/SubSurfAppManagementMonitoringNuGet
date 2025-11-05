@@ -94,6 +94,57 @@ builder.Services.AddApiVersioning(options =>
         });
 ```
 
+### Configuring TelemetrySuccessResponseCodes
+
+### Default Usage
+By default, the package registers `TelemetrySuccessResponseCodes` as a singleton with the standard HTTP status codes (401, 403, 404) treated as success for telemetry:
+
+```csharp
+services.UseDefaultTelemetryProcessorConfiguration();
+```
+
+### Adding Custom Status Codes (Options Pattern)
+To treat additional HTTP status codes as success, configure the options before calling `UseDefaultTelemetryProcessorConfiguration`:
+
+```csharp
+services.Configure<TelemetrySuccessResponseCodesOptions>(options =>
+{
+    options.AdditionalCodes.Add("418"); // Add custom code(s)
+    options.AdditionalCodes.Add("429");
+});
+services.UseDefaultTelemetryProcessorConfiguration();
+```
+
+- The first line configures the options to include your additional codes (e.g., 418, 429).
+- The second line registers the telemetry processor and the singleton, which will use the configured options.
+
+### Using appsettings.json (Optional)
+You can also configure additional codes via `appsettings.json`:
+
+```json
+"TelemetrySuccessResponseCodesOptions": {
+  "AdditionalCodes": [ "418", "429" ]
+}
+```
+
+And in your Startup/Program:
+```csharp
+services.Configure<TelemetrySuccessResponseCodesOptions>(Configuration.GetSection("TelemetrySuccessResponseCodesOptions"));
+services.UseDefaultTelemetryProcessorConfiguration();
+```
+
+
+### Summary
+- **Default codes:** 401, 403, 404
+- **Add custom codes:** At startup, via options pattern or appsettings.json
+- **Immutable:** Codes cannot be changed at runtime
+- **Injectable:** Use anywhere via DI
+
+---
+
+> **Note:** `UseDefaultTelemetryProcessorConfiguration` must be called after configuring your custom options if you want to override the defaults.
+
+
 ## Uploading new version of the nuget package
 
 In the github repository, Click Create new release. Create a tag in the fromat `v#.#.#`, where `#` are one or more numbers. Upon publishing the release Github actions will pack and upload a new package with version `v#.#.#`.

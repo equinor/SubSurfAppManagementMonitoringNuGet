@@ -19,8 +19,13 @@ public static class Startup
     {
         services.AddHttpContextAccessor();
         services.AddSingleton<ITelemetryInitializer, AuditTelemetryInitializer>();
-        services.AddApplicationInsightsTelemetryProcessor<DefaultTelemetryProcessor>();
+    }
+    
+    public static void UseDefaultTelemetryProcessorConfiguration(this IServiceCollection services)
+    {
         services.AddSingleton<TelemetrySuccessResponseCodes>();
+        services.Configure<TelemetrySuccessResponseCodesOptions>(_ => { }); // Register options with defaults
+        services.AddApplicationInsightsTelemetryProcessor<DefaultTelemetryProcessor>();
     }
 
 }
