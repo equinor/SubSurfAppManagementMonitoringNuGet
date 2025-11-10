@@ -27,18 +27,10 @@ public class AuditTelemetryInitializer : ITelemetryInitializer
         var httpContext = _contextAccessor.HttpContext;
         try
         {
-            if (httpContext == null)
-                return;
-
-            var forwardedFor = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
-            var ip = forwardedFor?.Split(',').FirstOrDefault()?.Trim();
-
-            if (string.IsNullOrWhiteSpace(ip))
-                ip = httpContext.Connection.RemoteIpAddress?.ToString();
-
-            if (!string.IsNullOrWhiteSpace(ip))
-                telemetry.Context.Location.Ip = ip;
-            
+            if (httpContext?.Connection.RemoteIpAddress != null)
+            {
+                telemetry.Context.Location.Ip = httpContext.Connection.RemoteIpAddress.ToString();
+            }
 
             if (httpContext?.Request?.Headers["User-Agent"] is not null)
             {
