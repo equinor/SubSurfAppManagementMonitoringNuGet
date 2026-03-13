@@ -1,6 +1,7 @@
 using Equinor.SubSurfAppManagementMonitoringNuGet.Config;
 
 namespace Equinor.SubSurfAppManagementMonitoringNuGet.UnitTests;
+
 using System.Diagnostics;
 using System.Net;
 using System.Security.Claims;
@@ -73,9 +74,9 @@ public class AuditActivityProcessorShould
             Connection =
             {
                 RemoteIpAddress = IPAddress.Parse("10.10.10.10")
-            }
+            },
+            Request = { Headers = { ["X-Forwarded-For"] = "203.0.113.10, 70.41.3.18" } }
         };
-        context.Request.Headers["X-Forwarded-For"] = "203.0.113.10, 70.41.3.18";
         _mockContextAccessor.Setup(x => x.HttpContext).Returns(context);
 
         // Act
@@ -95,9 +96,10 @@ public class AuditActivityProcessorShould
             Connection =
             {
                 RemoteIpAddress = IPAddress.Parse("192.168.1.1")
-            }
+
+            },
+            Request = { Headers = { ["X-Forwarded-For"] = "   " } }
         };
-        context.Request.Headers["X-Forwarded-For"] = "   ";
         _mockContextAccessor.Setup(x => x.HttpContext).Returns(context);
 
         // Act
