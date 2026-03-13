@@ -15,18 +15,17 @@ public class AuditActivityProcessor(IHttpContextAccessor contextAccessor) : Base
     public const string RemoteIpTag = "client.address";
     public const string ApplicationRolesTag = "UserApplicationRoles";
     public const string UserAgentTag = "user-agent";
-        
+
     public override void OnEnd(Activity data)
     {
         try
         {
             if (contextAccessor.HttpContext is not { } httpContext) return;
-            
-             var forwardedFor = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
-             var ip = forwardedFor?.Split(',').FirstOrDefault()?.Trim();
-             
-             if (string.IsNullOrWhiteSpace(ip))
-                 ip = httpContext.Connection.RemoteIpAddress?.ToString();
+
+            var forwardedFor = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+            var ip = !string.IsNullOrWhiteSpace(forwardedFor)
+                ? forwardedFor.Split(',').FirstOrDefault()?.Trim()
+                : httpContext.Connection.RemoteIpAddress?.ToString();
 
             if (!string.IsNullOrWhiteSpace(ip))
             {
