@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Equinor.SubSurfAppManagementMonitoringNuGet.Extensions;
 
-public static class IServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSubSurfAppManagementMonitoring(this IServiceCollection services)
     {
