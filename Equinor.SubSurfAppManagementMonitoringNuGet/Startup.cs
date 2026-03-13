@@ -1,5 +1,4 @@
 using Equinor.SubSurfAppManagementMonitoringNuGet.Config;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Trace;
 
