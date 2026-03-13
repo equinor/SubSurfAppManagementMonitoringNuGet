@@ -22,7 +22,12 @@ public class AuditActivityProcessor(IHttpContextAccessor contextAccessor) : Base
         {
             if (contextAccessor.HttpContext is not { } httpContext) return;
             
-            var ip = ResolveClientIp(httpContext);
+             var forwardedFor = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+             var ip = forwardedFor?.Split(',').FirstOrDefault()?.Trim();
+             
+             if (string.IsNullOrWhiteSpace(ip))
+                 ip = httpContext.Connection.RemoteIpAddress?.ToString();
+
             if (!string.IsNullOrWhiteSpace(ip))
             {
                 data.SetTag(RemoteIpTag, ip);
@@ -59,17 +64,5 @@ public class AuditActivityProcessor(IHttpContextAccessor contextAccessor) : Base
         {
             base.OnEnd(data);
         }
-    }
-
-    private static string? ResolveClientIp(HttpContext httpContext)
-    {
-        var forwardedFor = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
-        var firstHop = forwardedFor?.Split(',').FirstOrDefault()?.Trim();
-        if (!string.IsNullOrWhiteSpace(firstHop))
-        {
-            return firstHop;
-        }
-
-        return httpContext.Connection.RemoteIpAddress?.ToString();
     }
 }
