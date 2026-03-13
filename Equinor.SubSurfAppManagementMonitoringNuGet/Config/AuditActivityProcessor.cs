@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
@@ -39,10 +40,13 @@ public class AuditActivityProcessor(IHttpContextAccessor contextAccessor) : Base
 
             if (httpContext.User.Identity?.IsAuthenticated == true)
             {
+                var claims = httpContext.User.Claims;
                 var userId =
-                    httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value ??
-                    httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ??
-                    httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Upn)?.Value;
+                    claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value ??
+                    claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ??
+                    claims.FirstOrDefault(c => c.Type == ClaimTypes.Upn)?.Value ??
+                    claims.FirstOrDefault(c => string.Equals(c.Type, "upn", StringComparison.OrdinalIgnoreCase))?.Value ??
+                    "<unknown>";
 
                 data.SetTag(AuthenticatedUserTag, userId);
 
