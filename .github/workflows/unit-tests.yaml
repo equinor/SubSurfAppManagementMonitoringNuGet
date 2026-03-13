@@ -1,0 +1,35 @@
+name: Run Unit Tests
+run-name: ${{ github.actor }} is running backend unit tests
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "Equinor.SubSurfAppManagementMonitoringNuGet/**"
+      - "Equinor.SubSurfAppManagementMonitoringNuGet.UnitTests/**"
+      - ".github/workflows/unit-tests.yaml"
+
+permissions: {}
+
+jobs:
+  unit-tests:
+    name: run unit tests for API
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: run unit tests
+        run: dotnet test
+        working-directory: Equinor.SubSurfAppManagementMonitoringNuGet.UnitTests
