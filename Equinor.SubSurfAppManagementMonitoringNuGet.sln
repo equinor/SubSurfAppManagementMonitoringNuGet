@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solutions Items", "Solution
 		NuGet.Config = NuGet.Config
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Equinor.SubSurfAppManagementMonitoringNuGet.UnitTests", "Equinor.SubSurfAppManagementMonitoringNuGet.UnitTests\Equinor.SubSurfAppManagementMonitoringNuGet.UnitTests.csproj", "{5E1FFB82-9330-4973-A59A-7282450F6343}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,5 +19,9 @@ Global
 		{255BC5F9-4D07-4381-9F03-902088B61D49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{255BC5F9-4D07-4381-9F03-902088B61D49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{255BC5F9-4D07-4381-9F03-902088B61D49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E1FFB82-9330-4973-A59A-7282450F6343}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E1FFB82-9330-4973-A59A-7282450F6343}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E1FFB82-9330-4973-A59A-7282450F6343}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E1FFB82-9330-4973-A59A-7282450F6343}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

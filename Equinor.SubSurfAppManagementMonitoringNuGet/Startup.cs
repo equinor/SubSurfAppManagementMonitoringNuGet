@@ -1,6 +1,6 @@
 using Equinor.SubSurfAppManagementMonitoringNuGet.Config;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry.Trace;
 
 namespace Equinor.SubSurfAppManagementMonitoringNuGet;
 
@@ -18,7 +18,9 @@ public static class Startup
     private static void ConfigureDependencyInjection(IServiceCollection services)
     {
         services.AddHttpContextAccessor();
-        services.AddSingleton<ITelemetryInitializer, AuditTelemetryInitializer>();
+        services.AddOpenTelemetry()
+            .WithTracing(builder => builder.AddProcessor<AuditActivityProcessor>());
+ 
     }
 
 }
