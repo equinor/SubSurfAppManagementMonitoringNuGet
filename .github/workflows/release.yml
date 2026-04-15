@@ -1,19 +1,13 @@
+name: Release to NuGet
+
 on:
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+-alpha.[0-9]+.[0-9]+.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+-alpha.[0-9]+.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+-alpha.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+-alpha"
-      - "v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+.[0-9]+.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+-beta"
-      - "v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+.[0-9]+.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+-rc"
+      - "v[0-9]+.[0-9]+.[0-9]+-preview*"
+      - "v[0-9]+.[0-9]+.[0-9]+-alpha*"
+      - "v[0-9]+.[0-9]+.[0-9]+-beta*"
+      - "v[0-9]+.[0-9]+.[0-9]+-rc*"
 
 permissions: {}
 
@@ -30,6 +24,11 @@ jobs:
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       with: 
         persist-credentials: false
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
+      with:
+        dotnet-version: '8.0.x'
     
     - name: Set VERSION variable from tag
       run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
@@ -42,7 +41,7 @@ jobs:
       working-directory: Equinor.SubSurfAppManagementMonitoringNuGet
       run: dotnet pack --configuration Release /p:Version=${VERSION} --output .
           
-    # Get a short-lived NuGet API key
+    # Get a short-lived NuGet API key via OIDC trusted publishing
     - name: NuGet login (OIDC → temp API key)
       uses: NuGet/login@d22cc5f58ff5b88bf9bd452535b4335137e24544
       id: login
