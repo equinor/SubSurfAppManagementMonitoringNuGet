@@ -1,6 +1,6 @@
 <img alt="intro-logo" src="https://raw.githubusercontent.com/equinor/amplify-component-lib/main/static/amplify.png" width="300px" />
 
-[![SCM Compliance](https://scm-compliance-api.radix.equinor.com/repos/equinor/amplify-component-lib/badge)](https://scm-compliance-api.radix.equinor.com/repos/equinor/amplify-component-lib/badge)
+[![SCM Compliance](https://scm-compliance-api.radix.equinor.com/repos/equinor/SubSurfAppManagementMonitoringNuGet/badge)](https://scm-compliance-api.radix.equinor.com/repos/equinor/amplify-component-lib/badge)
 
 SubsurfAppManagementMonitoringNuget contains software designed to be impemented by APIs that are to be integrated with our monitoring solution.
 
