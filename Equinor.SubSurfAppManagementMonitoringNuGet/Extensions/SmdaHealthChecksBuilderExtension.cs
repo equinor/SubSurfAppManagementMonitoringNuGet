@@ -94,7 +94,7 @@ public static class SmdaHealthChecksBuilderExtension
                 var tokenService = sp.GetRequiredService<IAccessTokenService>();
                 var client = sp.GetRequiredService<ISmdaClient>();
                 var logger = sp.GetRequiredService<ILogger<SmdaHealthCheck>>();
-                const string requestPath = "/smda/v2.0/actuator/health";
+                const string requestPath = "/smda/v2.0/availability";
                 var resourceId = resourceIdFactory(sp);
                 return new SmdaHealthCheck(client, tokenService, requestPath, resourceId, logger);
             },
