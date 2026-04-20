@@ -55,7 +55,7 @@ public class SmdaHealthCheck : IHealthCheck
                 
                 var stream = await request.Content.ReadAsStreamAsync(cancellationToken);
                 var result =
-                    await JsonSerializer.DeserializeAsync<SmdaHealthResponse>(stream, _options,
+                    await JsonSerializer.DeserializeAsync<string>(stream, _options,
                         cancellationToken);
 
                 if (result == null)
@@ -66,7 +66,7 @@ public class SmdaHealthCheck : IHealthCheck
                         exception: null);
                 }
                 
-                if (SmdaResponseStatusHealhtyIndication.HealthyStatuses.Contains(result.Status))
+                if (SmdaResponseStatusHealhtyIndication.HealthyStatuses.Contains(result))
                 {
                     return HealthCheckResult.Healthy(
                         description: HealthCheckDescriptions.Descriptions[HealthCheckNames.SMDA] ??
