@@ -16,7 +16,6 @@ public class AuditActivityProcessor(IHttpContextAccessor contextAccessor) : Base
     public const string RemoteIpTag = "client.address";
     public const string ApplicationRolesTag = "UserApplicationRoles";
     public const string UserAgentTag = "user-agent";
-    public const string RealIpTag = "x-real-ip";
 
     public override void OnEnd(Activity data)
     {
@@ -29,12 +28,6 @@ public class AuditActivityProcessor(IHttpContextAccessor contextAccessor) : Base
             var ip = !string.IsNullOrWhiteSpace(forwardedFor)
                 ? forwardedFor.Split(',').LastOrDefault()?.Trim()
                 : httpContext.Connection.RemoteIpAddress?.ToString();
-
-            var realIp = httpContext.Request.Headers["X-Real-IP"].FirstOrDefault();
-            if (!string.IsNullOrWhiteSpace(realIp))
-            {
-                data.SetTag(RealIpTag, realIp);
-            }
 
             if (!string.IsNullOrWhiteSpace(ip))
             {
