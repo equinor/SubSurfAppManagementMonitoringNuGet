@@ -70,7 +70,7 @@ public class AuditActivityProcessorShould
     }
 
     [Test]
-    public void SetClientAddressTag_FromFirstXForwardedForHop_WhenHeaderIsPresent()
+    public void SetClientAddressTag_FromLastXForwardedForHop_WhenHeaderIsPresent()
     {
         // Arrange
         var context = new DefaultHttpContext
