@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using OpenTelemetry;
 
 namespace Equinor.SubSurfAppManagementMonitoringNuGet.Config;
@@ -16,17 +16,25 @@ public class AuditActivityProcessor(IHttpContextAccessor contextAccessor) : Base
     public const string RemoteIpTag = "client.address";
     public const string ApplicationRolesTag = "UserApplicationRoles";
     public const string UserAgentTag = "user-agent";
+    public const string RealIpTag = "x-real-ip";
 
     public override void OnEnd(Activity data)
     {
         try
         {
-            if (contextAccessor.HttpContext is not { } httpContext) return;
+            if (contextAccessor.HttpContext is not { } httpContext)
+                return;
 
-            var forwardedFor = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+            var forwardedFor = httpContext.Request.Headers["X-Forwarded-For"].LastOrDefault();
             var ip = !string.IsNullOrWhiteSpace(forwardedFor)
-                ? forwardedFor.Split(',').FirstOrDefault()?.Trim()
+                ? forwardedFor.Split(',').LastOrDefault()?.Trim()
                 : httpContext.Connection.RemoteIpAddress?.ToString();
+
+            var realIp = httpContext.Request.Headers["X-Real-IP"].FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(realIp))
+            {
+                data.SetTag(RealIpTag, realIp);
+            }
 
             if (!string.IsNullOrWhiteSpace(ip))
             {
@@ -41,18 +49,25 @@ public class AuditActivityProcessor(IHttpContextAccessor contextAccessor) : Base
             if (httpContext.User.Identity?.IsAuthenticated == true)
             {
                 var claims = httpContext.User.Claims.ToList();
-                var userId = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value ??
-                             claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ??
-                             claims.FirstOrDefault(c => c.Type == ClaimTypes.Upn)?.Value ??
-                             claims.FirstOrDefault(c => string.Equals(c.Type, "upn", StringComparison.OrdinalIgnoreCase))?.Value ??
-                             "<unknown>";
+                var userId =
+                    claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value
+                    ?? claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
+                    ?? claims.FirstOrDefault(c => c.Type == ClaimTypes.Upn)?.Value
+                    ?? claims
+                        .FirstOrDefault(c =>
+                            string.Equals(c.Type, "upn", StringComparison.OrdinalIgnoreCase)
+                        )
+                        ?.Value
+                    ?? "<unknown>";
 
                 data.SetTag(AuthenticatedUserTag, userId);
 
                 var roles = new List<string>();
                 foreach (var identity in httpContext.User.Identities)
                 {
-                    roles.AddRange(identity.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value));
+                    roles.AddRange(
+                        identity.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value)
+                    );
                 }
 
                 data.SetTag(ApplicationRolesTag, string.Join(", ", roles));
