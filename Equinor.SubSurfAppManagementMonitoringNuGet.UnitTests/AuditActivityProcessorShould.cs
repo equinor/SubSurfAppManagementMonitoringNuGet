@@ -41,7 +41,11 @@ public class AuditActivityProcessorShould
         _processor.OnEnd(_activity);
 
         // Assert
-        Assert.That(_activity.TagObjects, Is.Empty, "No tags should be set when HttpContext is null");
+        Assert.That(
+            _activity.TagObjects,
+            Is.Empty,
+            "No tags should be set when HttpContext is null"
+        );
     }
 
     [Test]
@@ -50,10 +54,7 @@ public class AuditActivityProcessorShould
         // Arrange
         var context = new DefaultHttpContext
         {
-            Connection =
-            {
-                RemoteIpAddress = IPAddress.Parse("192.168.1.1")
-            }
+            Connection = { RemoteIpAddress = IPAddress.Parse("192.168.1.1") },
         };
         _mockContextAccessor.Setup(x => x.HttpContext).Returns(context);
 
@@ -62,20 +63,20 @@ public class AuditActivityProcessorShould
         _processor.OnEnd(_activity);
 
         // Assert
-        Assert.That(_activity.GetTagItem(AuditActivityProcessor.RemoteIpTag), Is.EqualTo("192.168.1.1"));
+        Assert.That(
+            _activity.GetTagItem(AuditActivityProcessor.RemoteIpTag),
+            Is.EqualTo("192.168.1.1")
+        );
     }
 
     [Test]
-    public void SetClientAddressTag_FromFirstXForwardedForHop_WhenHeaderIsPresent()
+    public void SetClientAddressTag_FromLastXForwardedForHop_WhenHeaderIsPresent()
     {
         // Arrange
         var context = new DefaultHttpContext
         {
-            Connection =
-            {
-                RemoteIpAddress = IPAddress.Parse("10.10.10.10")
-            },
-            Request = { Headers = { ["X-Forwarded-For"] = "203.0.113.10, 70.41.3.18" } }
+            Connection = { RemoteIpAddress = IPAddress.Parse("10.10.10.10") },
+            Request = { Headers = { ["X-Forwarded-For"] = "203.0.113.10, 70.41.3.18" } },
         };
         _mockContextAccessor.Setup(x => x.HttpContext).Returns(context);
 
@@ -84,7 +85,10 @@ public class AuditActivityProcessorShould
         _processor.OnEnd(_activity);
 
         // Assert
-        Assert.That(_activity.GetTagItem(AuditActivityProcessor.RemoteIpTag), Is.EqualTo("203.0.113.10"));
+        Assert.That(
+            _activity.GetTagItem(AuditActivityProcessor.RemoteIpTag),
+            Is.EqualTo("70.41.3.18")
+        );
     }
 
     [Test]
@@ -93,12 +97,8 @@ public class AuditActivityProcessorShould
         // Arrange
         var context = new DefaultHttpContext
         {
-            Connection =
-            {
-                RemoteIpAddress = IPAddress.Parse("192.168.1.1")
-
-            },
-            Request = { Headers = { ["X-Forwarded-For"] = "   " } }
+            Connection = { RemoteIpAddress = IPAddress.Parse("192.168.1.1") },
+            Request = { Headers = { ["X-Forwarded-For"] = "   " } },
         };
         _mockContextAccessor.Setup(x => x.HttpContext).Returns(context);
 
@@ -107,7 +107,10 @@ public class AuditActivityProcessorShould
         _processor.OnEnd(_activity);
 
         // Assert
-        Assert.That(_activity.GetTagItem(AuditActivityProcessor.RemoteIpTag), Is.EqualTo("192.168.1.1"));
+        Assert.That(
+            _activity.GetTagItem(AuditActivityProcessor.RemoteIpTag),
+            Is.EqualTo("192.168.1.1")
+        );
     }
 
     [Test]
@@ -135,7 +138,10 @@ public class AuditActivityProcessorShould
         _processor.OnEnd(_activity);
 
         // Assert
-        Assert.That(_activity.GetTagItem(AuditActivityProcessor.UserAgentTag), Is.EqualTo("Mozilla/5.0"));
+        Assert.That(
+            _activity.GetTagItem(AuditActivityProcessor.UserAgentTag),
+            Is.EqualTo("Mozilla/5.0")
+        );
     }
 
     [Test]
@@ -167,7 +173,8 @@ public class AuditActivityProcessorShould
         Assert.That(
             _activity.GetTagItem(AuditActivityProcessor.AuthenticatedUserTag),
             Is.EqualTo("John Doe"),
-            "Name claim should take priority over Email claim");
+            "Name claim should take priority over Email claim"
+        );
     }
 
     [Test]
@@ -187,7 +194,8 @@ public class AuditActivityProcessorShould
         Assert.That(
             _activity.GetTagItem(AuditActivityProcessor.AuthenticatedUserTag),
             Is.EqualTo("john@example.com"),
-            "Email claim should be used as fallback when Name claim is absent");
+            "Email claim should be used as fallback when Name claim is absent"
+        );
     }
 
     [Test]
@@ -206,16 +214,17 @@ public class AuditActivityProcessorShould
         _processor.OnEnd(_activity);
 
         // Assert
-        Assert.That(_activity.GetTagItem(AuditActivityProcessor.ApplicationRolesTag), Is.EqualTo("Admin, Editor"));
+        Assert.That(
+            _activity.GetTagItem(AuditActivityProcessor.ApplicationRolesTag),
+            Is.EqualTo("Admin, Editor")
+        );
     }
 
     [Test]
     public void SetUserApplicationRolesTag_AsEmpty_WhenUserHasNoRoles()
     {
         // Arrange
-        var context = CreateAuthenticatedHttpContext(
-            new Claim(ClaimTypes.Name, "John Doe")
-        );
+        var context = CreateAuthenticatedHttpContext(new Claim(ClaimTypes.Name, "John Doe"));
         _mockContextAccessor.Setup(x => x.HttpContext).Returns(context);
 
         // Act
@@ -223,7 +232,10 @@ public class AuditActivityProcessorShould
         _processor.OnEnd(_activity);
 
         // Assert
-        Assert.That(_activity.GetTagItem(AuditActivityProcessor.ApplicationRolesTag), Is.EqualTo(""));
+        Assert.That(
+            _activity.GetTagItem(AuditActivityProcessor.ApplicationRolesTag),
+            Is.EqualTo("")
+        );
     }
 
     [Test]
@@ -246,14 +258,19 @@ public class AuditActivityProcessorShould
     public void SetAuthIdToUnknown_WhenExceptionIsThrown()
     {
         // Arrange
-        _mockContextAccessor.Setup(x => x.HttpContext).Throws(new Exception("Simulated exception"));
+        _mockContextAccessor
+            .Setup(x => x.HttpContext)
+            .Throws(new Exception("Simulated exception"));
 
         // Act
         _activity.Stop();
         _processor.OnEnd(_activity);
 
         // Assert
-        Assert.That(_activity.GetTagItem(AuditActivityProcessor.AuthenticatedUserTag), Is.EqualTo("<unknown>"));
+        Assert.That(
+            _activity.GetTagItem(AuditActivityProcessor.AuthenticatedUserTag),
+            Is.EqualTo("<unknown>")
+        );
     }
 
     private static DefaultHttpContext CreateAuthenticatedHttpContext(params Claim[] claims)
