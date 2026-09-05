@@ -8,6 +8,10 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Moq;
 
+// AuditActivityProcessor is obsolete (superseded by AuditActivityEnricher via AddSamMonitoring), but this file
+// intentionally keeps testing it directly to preserve backward-compatible coverage for existing consumers
+// still on the legacy Startup.Configure()/AddSubSurfAppManagementMonitoring() path.
+#pragma warning disable CS0618 // Type or member is obsolete
 public class AuditActivityProcessorShould
 {
     private Mock<IHttpContextAccessor> _mockContextAccessor;
@@ -221,6 +225,58 @@ public class AuditActivityProcessorShould
     }
 
     [Test]
+    public void SetUserApplicationRolesTag_FromRawRolesClaimType_WhenMapInboundClaimsIsDisabled()
+    {
+        // Apps that set JwtBearerOptions.MapInboundClaims = false keep the raw Azure AD "roles" claim instead of
+        // the mapped ClaimTypes.Role claim. Role capture must work regardless of that consumer-side choice, and
+        // must stay consistent with AuditActivityEnricher, which shares this resolution logic via AuditClaims.
+        var context = CreateAuthenticatedHttpContext(
+            new Claim(ClaimTypes.Name, "John Doe"),
+            new Claim("roles", "Admin"),
+            new Claim("roles", "Editor")
+        );
+        _mockContextAccessor.Setup(x => x.HttpContext).Returns(context);
+
+        _activity.Stop();
+        _processor.OnEnd(_activity);
+
+        Assert.That(
+            _activity.GetTagItem(AuditActivityProcessor.ApplicationRolesTag),
+            Is.EqualTo("Admin, Editor")
+        );
+    }
+
+    [Test]
+    public void DedupeUserApplicationRolesTag_WhenSameRoleClaimAppearsOnMultipleIdentities()
+    {
+        // Arrange: cookie + JWT identities both asserting "Admin" is a common real-world duplication source.
+        var cookieIdentity = new ClaimsIdentity(
+            [new Claim(ClaimTypes.Name, "John Doe"), new Claim(ClaimTypes.Role, "Admin")],
+            "Cookies"
+        );
+        var jwtIdentity = new ClaimsIdentity(
+            [new Claim(ClaimTypes.Role, "Admin"), new Claim(ClaimTypes.Role, "Editor")],
+            "Bearer"
+        );
+        var context = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal([cookieIdentity, jwtIdentity]),
+        };
+        _mockContextAccessor.Setup(x => x.HttpContext).Returns(context);
+
+        // Act
+        _activity.Stop();
+        _processor.OnEnd(_activity);
+
+        // Assert
+        Assert.That(
+            _activity.GetTagItem(AuditActivityProcessor.ApplicationRolesTag),
+            Is.EqualTo("Admin, Editor"),
+            "Duplicate role claims across identities should only be counted once"
+        );
+    }
+
+    [Test]
     public void SetUserApplicationRolesTag_AsEmpty_WhenUserHasNoRoles()
     {
         // Arrange
@@ -255,18 +311,32 @@ public class AuditActivityProcessorShould
     }
 
     [Test]
-    public void SetAuthIdToUnknown_WhenExceptionIsThrown()
+    public void NotSetAuthIdTag_WhenHttpContextResolutionThrows()
     {
-        // Arrange
+        // A failure resolving HttpContext itself happens before we can know whether the request is even
+        // authenticated. Previously this mislabeled such requests as an unresolved authenticated user
+        // ("<unknown>"), corrupting SAM's per-user KQL analytics. It must now leave the tag unset instead.
         _mockContextAccessor
             .Setup(x => x.HttpContext)
             .Throws(new Exception("Simulated exception"));
 
-        // Act
         _activity.Stop();
         _processor.OnEnd(_activity);
 
-        // Assert
+        Assert.That(_activity.GetTagItem(AuditActivityProcessor.AuthenticatedUserTag), Is.Null);
+    }
+
+    [Test]
+    public void SetAuthIdToUnknown_WhenClaimResolutionThrowsOnAnAuthenticatedRequest()
+    {
+        // Only once we know the request IS authenticated, and claim resolution itself fails, should the
+        // "<unknown>" sentinel be set - never for unrelated failures.
+        var context = new DefaultHttpContext { User = new ClaimsPrincipal(new ThrowingClaimsIdentity()) };
+        _mockContextAccessor.Setup(x => x.HttpContext).Returns(context);
+
+        _activity.Stop();
+        _processor.OnEnd(_activity);
+
         Assert.That(
             _activity.GetTagItem(AuditActivityProcessor.AuthenticatedUserTag),
             Is.EqualTo("<unknown>")
@@ -280,4 +350,31 @@ public class AuditActivityProcessorShould
 
         return new DefaultHttpContext { User = principal };
     }
+
+    [Test]
+    public void KeepTagKeysStable_BecauseSamsOwnAppInsightsKqlQueriesDependOnThem()
+    {
+        // AuditActivityProcessor.AuthenticatedUserTag ("enduser.id") is the OpenTelemetry semantic convention
+        // that the Azure Monitor exporter maps to the classic "user_AuthenticatedId" field, and
+        // ApplicationRolesTag ("UserApplicationRoles") is surfaced under Application Insights' customDimensions.
+        // Sam.Api.Services.ApplicationInsightService.GetRoleCountPerDay's KQL query reads both of these by exact
+        // name (customDimensions["UserApplicationRoles"], user_AuthenticatedId) to compute per-role usage
+        // analytics, so renaming either tag here would silently break that feature for every consuming app.
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(AuditActivityProcessor.AuthenticatedUserTag, Is.EqualTo("enduser.id"));
+            Assert.That(AuditActivityProcessor.ApplicationRolesTag, Is.EqualTo("UserApplicationRoles"));
+        }
+    }
+
+    /// <summary>
+    /// A <see cref="ClaimsIdentity"/> that reports as authenticated but throws when its claims are enumerated,
+    /// used to simulate a failure during claim resolution specifically (as opposed to a failure resolving
+    /// <see cref="HttpContext"/> itself).
+    /// </summary>
+    private sealed class ThrowingClaimsIdentity() : ClaimsIdentity(authenticationType: "Test")
+    {
+        public override IEnumerable<Claim> Claims => throw new InvalidOperationException("Simulated claims failure");
+    }
 }
+#pragma warning restore CS0618
