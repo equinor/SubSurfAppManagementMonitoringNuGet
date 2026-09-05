@@ -1,6 +1,4 @@
-using System;
 using System.Diagnostics;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using OpenTelemetry;
 
@@ -10,12 +8,25 @@ namespace Equinor.SubSurfAppManagementMonitoringNuGet.Config;
 /// Enriches activities with user and request metadata for audit telemetry.
 /// Replaces AuditTelemetryInitializer
 /// </summary>
+/// <remarks>
+/// Legacy path, kept only for backward compatibility with existing consumers of
+/// <see cref="Startup.Configure"/>. Prefer
+/// <see cref="Extensions.MonitoringServiceCollectionExtensions.AddSamMonitoring"/>, which uses the native
+/// OpenTelemetry <c>EnrichWithHttpRequest</c> extensibility point (<see cref="AuditActivityEnricher"/>) instead:
+/// that runs once per inbound request rather than on every ended activity (including nested dependency spans),
+/// and its host also configures the Azure Monitor exporter. Do not register both in the same application -
+/// every activity would then be tagged twice by two different mechanisms.
+/// </remarks>
+[Obsolete(
+    "Use AddSamMonitoring() instead, which uses AuditActivityEnricher via the native OpenTelemetry "
+        + "EnrichWithHttpRequest extensibility point and also configures the Azure Monitor exporter."
+)]
 public class AuditActivityProcessor(IHttpContextAccessor contextAccessor) : BaseProcessor<Activity>
 {
-    public const string AuthenticatedUserTag = "enduser.id";
-    public const string RemoteIpTag = "client.address";
-    public const string ApplicationRolesTag = "UserApplicationRoles";
-    public const string UserAgentTag = "user-agent";
+    public const string AuthenticatedUserTag = AuditTagNames.AuthenticatedUserTag;
+    public const string RemoteIpTag = AuditTagNames.RemoteIpTag;
+    public const string ApplicationRolesTag = AuditTagNames.ApplicationRolesTag;
+    public const string UserAgentTag = AuditTagNames.UserAgentTag;
 
     public override void OnEnd(Activity data)
     {
@@ -39,40 +50,39 @@ public class AuditActivityProcessor(IHttpContextAccessor contextAccessor) : Base
                 data.SetTag(UserAgentTag, userAgent.ToString());
             }
 
-            if (httpContext.User.Identity?.IsAuthenticated == true)
-            {
-                var claims = httpContext.User.Claims.ToList();
-                var userId =
-                    claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value
-                    ?? claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
-                    ?? claims.FirstOrDefault(c => c.Type == ClaimTypes.Upn)?.Value
-                    ?? claims
-                        .FirstOrDefault(c =>
-                            string.Equals(c.Type, "upn", StringComparison.OrdinalIgnoreCase)
-                        )
-                        ?.Value
-                    ?? "<unknown>";
-
-                data.SetTag(AuthenticatedUserTag, userId);
-
-                var roles = new List<string>();
-                foreach (var identity in httpContext.User.Identities)
-                {
-                    roles.AddRange(
-                        identity.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value)
-                    );
-                }
-
-                data.SetTag(ApplicationRolesTag, string.Join(", ", roles));
-            }
+            EnrichAuthenticatedUser(data, httpContext);
         }
         catch
         {
-            data.SetTag(AuthenticatedUserTag, "<unknown>");
+            // Enrichment must never break the pipeline; tags set here are best-effort. This does NOT set
+            // AuthenticatedUserTag to "<unknown>" - that sentinel is only set when we already know the request
+            // is authenticated but claim resolution itself failed (see EnrichAuthenticatedUser), so an
+            // unrelated failure (e.g. malformed X-Forwarded-For header) on an anonymous request can't corrupt
+            // SAM's per-role/per-user KQL analytics by mislabeling it as an unresolved authenticated user.
         }
         finally
         {
             base.OnEnd(data);
+        }
+    }
+
+    private static void EnrichAuthenticatedUser(Activity data, HttpContext httpContext)
+    {
+        if (httpContext.User.Identity?.IsAuthenticated != true)
+        {
+            return;
+        }
+
+        try
+        {
+            var claims = httpContext.User.Claims.ToList();
+
+            data.SetTag(AuthenticatedUserTag, AuditClaims.ResolveUserId(claims));
+            data.SetTag(ApplicationRolesTag, string.Join(", ", AuditClaims.ResolveRoles(claims)));
+        }
+        catch
+        {
+            data.SetTag(AuthenticatedUserTag, AuditClaims.UnknownUser);
         }
     }
 }
